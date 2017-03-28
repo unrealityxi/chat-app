@@ -8,10 +8,29 @@ var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
+
+// This is momma and pappa, eq. of expresses app.get()
+// Its an event handler.
+// Arg "socket" stands for client.
+// On connect, alerts us
 io.on("connection", (socket)=>{
   console.log("New user connected!");
+
+  // Emits new message to the client
+  socket.emit("newMessage", {
+    "from": "Jainine",
+    "text": "Hi there and welcome!",
+    "createdAt": 12345
+  });
+
+  // DC handler
   socket.on("disconnect", ()=>{
     console.log("Client disconnected");
+  });
+  
+  // Receives created msg from the client
+  socket.on("createMessage", (message) => {
+    console.log(message);
   });
 });
 
