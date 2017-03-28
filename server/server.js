@@ -16,21 +16,22 @@ var io = socketIO(server);
 io.on("connection", (socket)=>{
   console.log("New user connected!");
 
-  // Emits new message to the client
-  socket.emit("newMessage", {
-    "from": "Jainine",
-    "text": "Hi there and welcome!",
-    "createdAt": 12345
-  });
-
   // DC handler
   socket.on("disconnect", ()=>{
     console.log("Client disconnected");
   });
   
-  // Receives created msg from the client
+  // CREATEMESSAGE listener
   socket.on("createMessage", (message) => {
-    console.log(message);
+    // Emmits event globaly;
+    // io.emit
+    console.log("Created message");
+    io.emit("newMessage", {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+
+    })
   });
 });
 

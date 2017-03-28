@@ -3,11 +3,6 @@ var socket = io();
 socket.on("connect", function(){
   console.log("Connected to server");
 
-
-  socket.emit("createMessage", {
-    "from": "dragan",
-    "text": "Dobro jutro džezeri"
-  });
 });
 
 // DC handler
@@ -17,5 +12,6 @@ socket.on("disconnect", function(){
 
 // New message handler
 socket.on("newMessage", function(message){
+  console.log("New message");
   console.log(message);
 });
