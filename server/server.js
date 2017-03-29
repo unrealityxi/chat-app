@@ -28,18 +28,13 @@ io.on("connection", (socket)=>{
   });
   
   // CREATEMESSAGE listener
-  socket.on("createMessage", (message) => {
+  socket.on("createMessage", (message, cbck) => {
     // Emmits event globaly;
     // io.emit
     console.log("Created message");
     io.emit("newMessage", generateMessage(message.from, message.text));
-
-    // Broadcast sends to everyone but current socket
-    // socket.broadcast.emit("newMessage", {
-    //   from: message.from,
-    //   text: message.text,
-    //   createdAt: new Date().getTime();
-    // });
+  
+    cbck("This is from the server");
   });
 });
 
