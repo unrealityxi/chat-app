@@ -3,7 +3,7 @@ const http = require("http");
 const express = require("express");
 const PORT = process.env.PORT || 3000;
 const socketIO = require("socket.io");
-
+const {generateMessage} = require("./utils/message.js");
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
@@ -16,17 +16,9 @@ var io = socketIO(server);
 io.on("connection", (socket)=>{
   console.log("New user connected!");
 
-  socket.emit("newMessage", {
-    from: "Admin",
-    text: "Welcome to the chatroom!",
-    createdAt: new Date().getTime()
-  });
+  socket.emit("newMessage", generateMessage("Admin", "Welcome to the chatroom"));
 
-  socket.broadcast.emit("newMessage", {
-    from: "Admin",
-    text: "New User joined!",
-    createdAt: new Date().getTime()
-  });
+  socket.broadcast.emit("newMessage", generateMessage("Admin", "New user joined!"));
 
 
 
@@ -40,11 +32,7 @@ io.on("connection", (socket)=>{
     // Emmits event globaly;
     // io.emit
     console.log("Created message");
-    io.emit("newMessage", {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    });
+    io.emit("newMessage", generateMessage(message.from, message.text));
 
     // Broadcast sends to everyone but current socket
     // socket.broadcast.emit("newMessage", {
