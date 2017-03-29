@@ -41,7 +41,7 @@ io.on("connection", (socket)=>{
     io.emit("newMessage", generateMessage(message.from, message.text));
     
     //execs callback provided at client side
-    cbck("This is from the server");
+    cbck();
   });
 
   // Location sharing handler
