@@ -3,7 +3,7 @@ const http = require("http");
 const express = require("express");
 const PORT = process.env.PORT || 3000;
 const socketIO = require("socket.io");
-const {generateMessage} = require("./utils/message.js");
+const {generateMessage, generateLocationMessage} = require("./utils/message.js");
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
@@ -11,16 +11,22 @@ var io = socketIO(server);
 
 // This is momma and pappa, eq. of expresses app.get()
 // Its an event handler.
-// Arg "socket" stands for client.
+// Arg "socket" stands for connected client.
 // On connect, alerts us
 io.on("connection", (socket)=>{
+
+  // logs that user connected to server
   console.log("New user connected!");
 
-  socket.emit("newMessage", generateMessage("Admin", "Welcome to the chatroom"));
+  // emits default welcome message visible only to current user
+  socket.emit("newMessage",
+              generateMessage("Admin",
+               "Welcome to the chatroom"));
 
-  socket.broadcast.emit("newMessage", generateMessage("Admin", "New user joined!"));
-
-
+  // Emits alert message to all but currently connected user
+  socket.broadcast.emit("newMessage", 
+                        generateMessage("Admin",
+                         "New user joined!"));
 
   // DC handler
   socket.on("disconnect", ()=>{
@@ -29,12 +35,20 @@ io.on("connection", (socket)=>{
   
   // CREATEMESSAGE listener
   socket.on("createMessage", (message, cbck) => {
-    // Emmits event globaly;
-    // io.emit
+    // Emmits newMessage event to all connected users;
+    // using io.emit
     console.log("Created message");
     io.emit("newMessage", generateMessage(message.from, message.text));
-  
+    
+    //execs callback provided at client side
     cbck("This is from the server");
+  });
+
+  // Location sharing handler
+  socket.on("createLocationMessage", (coords)=>{
+    io.emit("newLocationMessage", 
+            generateLocationMessage("Admin",
+             coords.latitude, coords.longitude));
   });
 });
 
