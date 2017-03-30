@@ -1,5 +1,26 @@
 var socket = io();
 
+
+function scrollToBottom(){
+  // Selectors
+  var messages = $("#messages");
+  // Heights
+  var newMessage = messages.children("li:last-child");
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  var clientHeight = messages.prop("clientHeight");
+  var scrollTop = messages.prop("scrollTop");
+  var scrollHeight = messages.prop("scrollHeight");
+
+  var totalHeight = clientHeight + scrollTop + newMessageHeight + lastMessageHeight;
+
+  if (totalHeight >= scrollHeight){
+    messages.scrollTop(scrollHeight);
+  }
+
+}
+
 // Just confirms that user connected. 
 socket.on("connect", function(){
   console.log("Connected to server");
@@ -12,17 +33,17 @@ socket.on("disconnect", function(){
 
 // New message handler
 socket.on("newMessage", function(message){
-  // Makes new list element
-  var li = jQuery("<li></li>");
-
-  // get messages time
   var formattedTime = moment(message.createdAt).format("h:mm a");
+  var template = jQuery("#message-template").html();
+  var html = Mustache.render(template, {
+     text: message.text,
+     createdAt: formattedTime,
+     from: message.from,
+  });
 
-  //sets messages text
-  li.text(`${formattedTime} ${message.from}: ${message.text}`);
+  $("#messages").append(html);
+  scrollToBottom();
 
-  // renders message to screen
-  jQuery("#messages").append(li);
 });
 
 // Location message handler
@@ -39,6 +60,7 @@ socket.on("newLocationMessage", function(message){
   a.text("My current location");
   li.append(a);
   $("#messages").append(li);
+  scrollToBottom();
 });
 
 
