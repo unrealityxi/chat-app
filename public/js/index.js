@@ -14,8 +14,13 @@ socket.on("disconnect", function(){
 socket.on("newMessage", function(message){
   // Makes new list element
   var li = jQuery("<li></li>");
+
+  // get messages time
+  var formattedTime = moment(message.createdAt).format("h:mm a");
+
   //sets messages text
-  li.text(`${message.from}: ${message.text}`);
+  li.text(`${formattedTime} ${message.from}: ${message.text}`);
+
   // renders message to screen
   jQuery("#messages").append(li);
 });
@@ -25,9 +30,11 @@ socket.on("newLocationMessage", function(message){
   var li = $("<li></li>");
   var a = $("<a target='_blank'></a>");
 
+  // gets formatted time
+  var formattedTime = moment(message.createdAt).format("h:mm a");
 
   // Renders clickable link
-  li.text(`${message.from}: `);
+  li.text(`${formattedTime} ${message.from}: `);
   a.attr("href", message.url);
   a.text("My current location");
   li.append(a);

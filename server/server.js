@@ -47,7 +47,7 @@ io.on("connection", (socket)=>{
   // Location sharing handler
   socket.on("createLocationMessage", (coords)=>{
     io.emit("newLocationMessage", 
-            generateLocationMessage("Admin",
+            generateLocationMessage("User",
              coords.latitude, coords.longitude));
   });
 });
