@@ -74,18 +74,17 @@ socket.on("newMessage", function(message){
 
 // Location message handler
 socket.on("newLocationMessage", function(message){
-  var li = $("<li></li>");
-  var a = $("<a target='_blank'></a>");
-
-  // gets formatted time
+  
   var formattedTime = moment(message.createdAt).format("h:mm a");
+  var template = $("#location-message-template").html();
+  var html = Mustache.render(template, {
+    from: message.from,
+    url: message.url,
+    createdAt: formattedTime
+  });
 
-  // Renders clickable link
-  li.text(`${formattedTime} ${message.from}: `);
-  a.attr("href", message.url);
-  a.text("My current location");
-  li.append(a);
-  $("#messages").append(li);
+  $("#messages").append(html);
+
   scrollToBottom();
 });
 
@@ -103,7 +102,6 @@ jQuery("#message-form").on("submit", function(e){
   }
 
   socket.emit("createMessage",{
-    from: "User",
     text: messageTextbox.val()
   }, function(){
     messageTextbox.val("");

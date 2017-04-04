@@ -63,8 +63,13 @@ io.on("connection", (socket)=>{
   socket.on("createMessage", (message, cbck) => {
     // Emmits newMessage event to all connected users;
     // using io.emit
-    console.log("Created message");
-    io.emit("newMessage", generateMessage(message.from, message.text));
+    var user = users.getUser(socket.id);
+
+    if(user && isRealString(message.text)) {
+      io.to(user.room).emit("newMessage", generateMessage(user.name, message.text));
+    }
+
+    
     
     //execs callback provided at client side
     cbck();
@@ -72,8 +77,11 @@ io.on("connection", (socket)=>{
 
   // Location sharing handler
   socket.on("createLocationMessage", (coords)=>{
-    io.emit("newLocationMessage", 
-            generateLocationMessage("User",
+
+    var user = users.getUser(socket.id);
+
+    io.to(user.room).emit("newLocationMessage", 
+            generateLocationMessage(user.name,
              coords.latitude, coords.longitude));
   });
 });
