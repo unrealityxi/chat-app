@@ -18,17 +18,43 @@ function scrollToBottom(){
   if (totalHeight >= scrollHeight){
     messages.scrollTop(scrollHeight);
   }
-
 }
 
 // Just confirms that user connected. 
 socket.on("connect", function(){
-  console.log("Connected to server");
+
+  // Fetches parameters from form query string
+  var params = jQuery.deparam(window.location.search);
+
+  // emits join event to the server
+  // takes callback to redirect user back to starting screen
+  // if any of params is invalid
+  socket.emit("join", params, function(err){
+    if (err) {
+      alert(err);      
+      window.location.href = "/";
+    } else {
+      console.log("No error");
+    }
+  });
 });
 
 // DC handler
 socket.on("disconnect", function(){
   console.log("Disconnected from server.");
+});
+
+// Updates user list
+
+socket.on("updateUserList", function(users){
+  var ol = $("<ol></ol>");
+
+  users.forEach(function (user) {
+    ol.append($("<li></li>").text(user));
+  });
+
+  $("#users").html(ol);
+
 });
 
 // New message handler
